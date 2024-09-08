@@ -11,17 +11,29 @@ def print_cam(rectWidth,rectHeight,frameSize=(640,480)):
 
 
         # Вычисляем центральные координаты
-        center_x = frameSize[0] // 2
-        center_y = frameSize[1] // 2
+        centerX = frameSize[0] // 2
+        centerY = frameSize[1] // 2
+
+        #Цвет центрального пикселя
+        centralPixel = frame[centerY, centerX]
+
+        #Определяем цвет
+        blue, green, red = centralPixel  # BGR формат
+        if red > green and red > blue:
+            fillColor = (0, 0, 255)  # Красный
+        elif green > red and green > blue:
+            fillColor = (0, 255, 0)  # Зеленый
+        else:
+            fillColor = (255, 0, 0)  # Синий
 
         #Рисуем крест
-        cv2.rectangle(frame, (center_x - rectWidth // 2, center_y - rectHeight // 2),
-                      (center_x + rectWidth // 2, center_y + rectHeight // 2), (0, 0, 255), 1)
+        cv2.rectangle(frame, (centerX - rectWidth // 2, centerY - rectHeight // 2),
+                      (centerX + rectWidth // 2, centerY + rectHeight // 2), fillColor, -1)
 
-        cv2.rectangle(frame, (center_x - rectHeight // 2, center_y - int(rectWidth*0.7)),
-                      (center_x+rectHeight//2, center_y-rectHeight//2), (0, 0, 255), 1)
-        cv2.rectangle(frame, (center_x - rectHeight // 2, center_y+rectHeight//2),
-                      (center_x + rectHeight // 2, center_y + int(rectWidth*0.7)), (0, 0, 255), 1)
+        cv2.rectangle(frame, (centerX - rectHeight // 2, centerY - int(rectWidth*0.7)),
+                      (centerX+rectHeight//2, centerY-rectHeight//2), fillColor, -1)
+        cv2.rectangle(frame, (centerX - rectHeight // 2, centerY+rectHeight//2),
+                      (centerX + rectHeight // 2, centerY + int(rectWidth*0.7)), fillColor, -1)
 
 
         #gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
