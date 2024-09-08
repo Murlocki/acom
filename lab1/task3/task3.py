@@ -19,6 +19,6 @@ def processVideo(path,frameSize=(1920,1080),color=cv2.COLOR_BGR2GRAY):
     cap.release()
 
 processVideo('video.avi')
-processVideo('../task4/video.mp4')
+processVideo('video.mp4')
 processVideo('video.avi', (1280, 720), cv2.COLOR_BGR2XYZ)
 processVideo('video.avi', (640, 360), cv2.COLOR_BGR2HSV)
