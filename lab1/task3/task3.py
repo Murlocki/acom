@@ -2,7 +2,6 @@ import cv2
 
 def processVideo(path,frameSize=(1920,1080),color=cv2.COLOR_BGR2GRAY):
     cap = cv2.VideoCapture(path, cv2.CAP_ANY)
-    cap = cv2.VideoCapture(r'video.avi', cv2.CAP_ANY)
 
     if not cap.isOpened():
         print("Error opening video stream or file")
