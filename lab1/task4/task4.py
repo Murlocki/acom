@@ -5,7 +5,7 @@ def readIPWriteTOFile():
     w = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     h = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-    video_writer = cv2.VideoWriter("output.mp4", fourcc,fps=10, frameSize=(w, h))
+    video_writer = cv2.VideoWriter("output.mp4", fourcc,fps=25, frameSize=(w, h))
     while (True):
         current_frame = cap.get(cv2.CAP_PROP_POS_FRAMES)
 
@@ -19,5 +19,5 @@ def readIPWriteTOFile():
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
     cap.release()
-
+    video_writer.release()
 readIPWriteTOFile()
