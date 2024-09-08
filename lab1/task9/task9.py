@@ -1,6 +1,6 @@
 import cv2
 def print_cam(rectWidth,rectHeight,frameSize=(640,480)):
-    #cap = cv2.VideoCapture(0)
+    #ipwebcam
     cap = cv2.VideoCapture("http://192.168.0.148:8080/video")
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
     videoWriter = cv2.VideoWriter("output.mp4", fourcc, fps=25, frameSize=(frameSize[0], frameSize[1]))
