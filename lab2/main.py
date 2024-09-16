@@ -33,8 +33,29 @@ def trackRed():
         cv2.imshow('Opened', opened)
         cv2.imshow('Closed', closed)
 
-        res = cv2.bitwise_and(hsv_frame,hsv_frame,mask=red_mask)
-        cv2.imshow("Result",cv2.cvtColor(res,cv2.COLOR_HSV2BGR))
+        # Задание 4: Нахождение моментов и площади объекта
+        moments = cv2.moments(closed)
+        if moments['m00'] != 0:
+            area = moments['m00']  # Площадь объекта
+            print(f"Area of the object: {area}")
+
+            # Находим центр объекта
+            cx = int(moments['m10'] / moments['m00'])
+            cy = int(moments['m01'] / moments['m00'])
+
+            # Рисуем черный прямоугольник вокруг объекта
+            (cnts, _) = cv2.findContours(closed.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+            for countour in cnts:
+                (x, y, w, h) = cv2.boundingRect(countour)
+                cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 0), 2)
+        else:
+            area = 0
+            print("No object detected.")
+
+        # Display the resulting frame
+        cv2.imshow('Result', frame)
+
+
         if cv2.waitKey(1) & 0xFF == 27:
             break
     cap.release()
