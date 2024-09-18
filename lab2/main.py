@@ -38,7 +38,8 @@ def trackRed():
         if moments['m00'] != 0:
             area = moments['m00']  # Площадь объекта
             print(f"Area of the object: {area}")
-
+            print(f"Zero-moment:{moments['m00']}")
+            print(f"First-order moments:{moments['m01']},{moments['m10']}")
             # Находим центр объекта
             cx = int(moments['m10'] / moments['m00'])
             cy = int(moments['m01'] / moments['m00'])
