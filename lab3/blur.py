@@ -45,7 +45,7 @@ def gaussBlur(img,kernelSize=3,standardDeviation=0.2):
 
 #Встроенная реализация фильтра Гаусса
 def applyGaussianFilterOpencv(image, size, sigma):
-    return cv2.GaussianBlur(image, (size, size), sigma)
+    return cv2.GaussianBlur(image, (size, size), sigmaX=sigma,sigmaY=sigma)
 
 def BlurFuss():
     img = cv2.imread("test2.jpg", cv2.IMREAD_GRAYSCALE)
