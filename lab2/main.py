@@ -18,7 +18,6 @@ def trackRed():
         red_mask = cv2.bitwise_or(mask1, mask2)
         # Отображаем красное на изображении
         cv2.imshow('Thresholded Red', red_mask)
-
         # Задание 3: Морфологические преобразования (открытие и закрытие)
         kernel = np.ones((5, 5), np.uint8)  # Определяем ядро для морфологических операций
         # При открытии сначала делается erosion - "уменьшаются" размеры пикселей объектов на переднем фоне, затем делает dilation - увеличение
@@ -35,6 +34,7 @@ def trackRed():
 
         # Задание 4: Нахождение моментов и площади объекта
         moments = cv2.moments(closed)
+        print(moments)
         if moments['m00'] != 0:
             area = moments['m00']  # Площадь объекта
             print(f"Area of the object: {area}")
@@ -49,6 +49,30 @@ def trackRed():
             for countour in cnts:
                 (x, y, w, h) = cv2.boundingRect(countour)
                 cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 0), 2)
+
+            #Общий прямоугольник на все
+            white_pixels = np.argwhere(closed == 255)
+            min_y, min_x = np.min(white_pixels, axis=0)
+            max_y, max_x = np.max(white_pixels, axis=0)
+            cv2.rectangle(frame, (min_x, min_y), (max_x, max_y), (0, 255, 0), 2)
+
+            #Общий прицел на все
+            white_pixels = np.argwhere(closed == 255)
+            minY, minX = np.min(white_pixels, axis=0)
+            maxY, maxX = np.max(white_pixels, axis=0)
+            centerX = (maxX+minX)//2
+            centerY = (maxY+minY)//2
+            radius = max(maxX - centerX,maxY - centerY)
+            cv2.circle(frame,(centerX,centerY),radius,(0,0,0),2)
+            cv2.line(frame,(centerX-radius,centerY),(centerX+radius,centerY),(0,0,0),2)
+            cv2.line(frame, (centerX, centerY-radius), (centerX, centerY+radius), (0, 0, 0), 2)
+            #Накладываем затемнение вне прицела
+            # Рисуем белый круг на маске
+            mask = np.zeros((frame.shape[0],frame.shape[1]), dtype=np.uint8)
+            cv2.circle(mask, (centerX, centerY), radius, 255, -1)
+            # Применяем маску к изображению
+            # Все пиксели вне круга будут черными, а внутри круга — исходными
+            frame = cv2.bitwise_and(frame, frame, mask=mask)
         else:
             area = 0
             print("No object detected.")
