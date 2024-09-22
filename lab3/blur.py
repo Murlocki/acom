@@ -1,7 +1,8 @@
+import cv2
 import numpy as np
 # Задание 1 Выполнить пункты 1 и 2 алгоритма, то есть построить
 # матрицу Гаусса. Просмотреть итоговую матрицу для размерностей 3, 5, 7
-def gaussMatrix(kernelSize, standardDeviation=0.2):
+def gaussMatrix(kernelSize=3, standardDeviation=0.2):
     kernel = np.ones((kernelSize, kernelSize))
     a = b = (kernelSize + 1) // 2
 
@@ -18,13 +19,48 @@ def gaussMatrix(kernelSize, standardDeviation=0.2):
     # Находим сумму
     elementSum = np.sum(kernel)
     kernel = kernel/elementSum
-    print(kernel)
+    return kernel
 def gaussFunc(x, y, omega, a, b):
     omega2 = 2 * omega ** 2
     m1 = 1 / (np.pi * omega2)
     m2 = np.exp(-((x-a) ** 2 + (y-b) ** 2) / omega2)
     return m1 * m2
 
-gaussMatrix(3,0.4)
-gaussMatrix(5,0.4)
-gaussMatrix(7,0.4)
+def gaussBlur(img,kernelSize=3,standardDeviation=0.2):
+    kernel = gaussMatrix(kernelSize,standardDeviation)
+    imgBlur = img.copy()
+
+    #Заводим стартовые индексы
+    xStart = kernelSize // 2
+    yStart = kernelSize // 2
+    for i in range(xStart, imgBlur.shape[0] - xStart):
+        for j in range(yStart, imgBlur.shape[1] - yStart):
+            # операция свёртки
+            val = 0
+            for k in range(-(kernelSize // 2), kernelSize // 2 + 1):
+                for l in range(-(kernelSize // 2), kernelSize // 2 + 1):
+                    val += img[i + k, j + l] * kernel[k + (kernelSize // 2), l + (kernelSize // 2)]
+            imgBlur[i, j] = val
+    return imgBlur
+
+def BlurFuss():
+    img = cv2.imread("test2.jpg", cv2.IMREAD_GRAYSCALE)
+    img = cv2.resize(img,(640,640))
+    #  размер ядра фильтра и стандартное отклонение
+    kernel_size = 5
+    standard_deviation = 100
+
+    imgBlur1 = gaussBlur(img, kernel_size, standard_deviation)
+    cv2.imshow(str(kernel_size) + 'x' + str(kernel_size) + ' and deviation ' + str(standard_deviation), imgBlur1)
+
+    # другие параметры
+    kernel_size = 11
+    standard_deviation = 50
+
+    imgBlur2 = gaussBlur(img, kernel_size, standard_deviation)
+    cv2.imshow(str(kernel_size)+'x'+str(kernel_size) + ' and deviation ' + str(standard_deviation), imgBlur2)
+
+    cv2.imshow("Original image",img)
+    cv2.waitKey(0)
+
+BlurFuss()
