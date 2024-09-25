@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 
 
-def preprocessImage(path,kernelSize = 5,sigmaX=10,sigmaY=10,sizeX=32,sizeY=32):
+def preprocessImage(path,kernelSize = 5,sigmaX=10,sigmaY=10,sizeX=640,sizeY=640):
     img = cv2.imread(path)
     img = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
     img = cv2.resize(img,(sizeX,sizeY))
@@ -21,6 +21,13 @@ def preprocessImage(path,kernelSize = 5,sigmaX=10,sigmaY=10,sizeX=32,sizeY=32):
     corners = calcCorners(grads)
     print(corners)
 
+    suppressed_img = supressNotMax(lengths, corners)
+
+    # Вывод изображений на экран
+    cv2.imshow('Suppressed Image', suppressed_img)
+
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
     cv2.waitKey(0)
 
 def calcGradients(img):
@@ -79,4 +86,31 @@ def calcCorners(grads):
             corRow.append(calcCorner(col))
         corners.append(corRow)
     return corners
-preprocessImage("test2.jpg")
+
+def supressNotMax(gradsLenths,corners):
+    height, width = gradsLenths.shape
+    suppressed = np.zeros_like(gradsLenths)
+
+    for y in range(1, height - 1):
+        for x in range(1, width - 1):
+            angle = corners[x][y]
+
+            if angle==0 or angle==4:
+                q = gradsLenths[x+1][y]
+                r = gradsLenths[x-1][y]
+            elif angle==1 or angle==5:
+                q = gradsLenths[x-1][y+1]
+                r = gradsLenths[x + 1][y - 1]
+            elif angle==2 or angle==6:
+                q = gradsLenths[x][y+1]
+                r = gradsLenths[x][y-1]
+            elif angle==3 or angle==7:
+                q = gradsLenths[x+1][y+1]
+                r = gradsLenths[x-1][y-1]
+
+            if gradsLenths[x,][y] >= q and gradsLenths[x][y] >= r:
+                suppressed[x][y] = gradsLenths[x][y]
+
+    return suppressed
+
+preprocessImage("test4.jpeg")
