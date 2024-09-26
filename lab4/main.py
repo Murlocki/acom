@@ -13,30 +13,28 @@ def preprocessImage(path,kernelSize = 5,sigmaX=10,sigmaY=10,sizeX=640,sizeY=640)
     cv2.imshow("GrayScale image",img)
 
     imgGaussian = cv2.GaussianBlur(img,(kernelSize,kernelSize),sigmaX=sigmaX,sigmaY=sigmaY)
-    cv2.imshow("Gaussian image",imgGaussian)
-
-    grads = calcGradients(imgGaussian)
-    print(grads)
-    lengths = caclGradLengths(imgGaussian,grads)
-    print(lengths)
-    corners = calcCorners(imgGaussian,grads)
-    print(corners)
-
-    suppressed_img = supressNotMax(lengths, corners)
-    # Вывод изображений на экран
-    cv2.imshow('Suppressed Image', suppressed_img)
-
-    edgeImg = checkThreshAndEdge(imgGaussian,suppressed_img,lengths,10)
-    cv2.imshow('Edge Image', edgeImg)
-    print(edgeImg)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    print(imgGaussian)
+    # cv2.imshow("Gaussian image",imgGaussian)
+    #
+    # grads = calcGradients(imgGaussian)
+    # print(grads)
+    # lengths = caclGradLengths(imgGaussian,grads)
+    # print(lengths)
+    # corners = calcCorners(imgGaussian,grads)
+    # print(corners)
+    #
+    # suppressed_img = supressNotMax(lengths, corners)
+    # # Вывод изображений на экран
+    # cv2.imshow('Suppressed Image', suppressed_img)
+    #
+    # edgeImg = checkThreshAndEdge(imgGaussian,suppressed_img,lengths,10)
+    # cv2.imshow('Edge Image', edgeImg)
+    # print(edgeImg)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
 
 def calcGradients(img):
-    # sobel_x = cv2.Sobel(img, cv2.CV_64F, 1, 0, ksize=3)  # Границы по оси X
-    # sobel_y = cv2.Sobel(img, cv2.CV_64F, 0, 1, ksize=3)  # Границы по оси Y
-    # print(sobel_x)
-    # print(sobel_y)
+
     gradientMatrix = []
     for x in range(1,img.shape[0]-1):
         matrixRow = []
@@ -128,6 +126,7 @@ def supressNotMax(gradsLenths,corners):
     return suppressed
 def checkThreshAndEdge(img,filteredImg,gradientsLength,boundPath1=10,boundPath2 = 25):
     maxGradient = np.max(gradientsLength)
+    print(maxGradient)
     lower_bound = maxGradient / boundPath1
     upper_bound = maxGradient / boundPath2
     img_border_filter = np.zeros(img.shape)
