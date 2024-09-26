@@ -1,8 +1,9 @@
 import math
 
 import cv2
+import numpy
 import numpy as np
-
+import math
 
 def preprocessImage(path,kernelSize = 5,sigmaX=10,sigmaY=10,sizeX=640,sizeY=640):
     img = cv2.imread(path)
@@ -16,19 +17,20 @@ def preprocessImage(path,kernelSize = 5,sigmaX=10,sigmaY=10,sizeX=640,sizeY=640)
 
     grads = calcGradients(imgGaussian)
     print(grads)
-    lengths = caclGradLengths(grads)
+    lengths = caclGradLengths(imgGaussian,grads)
     print(lengths)
-    corners = calcCorners(grads)
+    corners = calcCorners(imgGaussian,grads)
     print(corners)
 
     suppressed_img = supressNotMax(lengths, corners)
-
     # Вывод изображений на экран
     cv2.imshow('Suppressed Image', suppressed_img)
 
+    edgeImg = checkThreshAndEdge(imgGaussian,suppressed_img,lengths,10)
+    cv2.imshow('Edge Image', edgeImg)
+    print(edgeImg)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
-    cv2.waitKey(0)
 
 def calcGradients(img):
     # sobel_x = cv2.Sobel(img, cv2.CV_64F, 1, 0, ksize=3)  # Границы по оси X
@@ -46,8 +48,16 @@ def calcGradients(img):
             matrixRow.append((Gx,Gy))
         gradientMatrix.append(matrixRow)
     return gradientMatrix
-def caclGradLengths(grads):
-    return np.sqrt(np.sum(np.pow(grads,2),axis=2))
+def caclGradLengths(img,grads):
+    res = np.zeros((img.shape[0],img.shape[1]))
+    k = 0
+    for i in range(1,img.shape[0]-1):
+        l = 0
+        for j in range(1,img.shape[1]-1):
+            res[i][j] = math.sqrt(grads[k][l][0]**2+grads[k][l][1]**2)
+            l=l+1
+        k=k+1
+    return res
 
 def calcCorner(grad):
     tang = grad[1]/grad[0] if grad[0] != 0 else 999
@@ -78,13 +88,15 @@ def calcCorner(grad):
         elif (grad[1] <= 0):
             return 6
 
-def calcCorners(grads):
-    corners = []
-    for row in grads:
-        corRow = []
-        for col in row:
-            corRow.append(calcCorner(col))
-        corners.append(corRow)
+def calcCorners(img,grads):
+    corners = np.zeros((img.shape[0],img.shape[1]))
+    k=1
+    for i in range(len(grads)):
+        l = 1
+        for j in range(len(grads[0])):
+            corners[k][l] = calcCorner(grads[i][j])
+            l = l + 1
+        k = k + 1
     return corners
 
 def supressNotMax(gradsLenths,corners):
@@ -108,9 +120,38 @@ def supressNotMax(gradsLenths,corners):
                 q = gradsLenths[x+1][y+1]
                 r = gradsLenths[x-1][y-1]
 
-            if gradsLenths[x,][y] >= q and gradsLenths[x][y] >= r:
-                suppressed[x][y] = gradsLenths[x][y]
+            if gradsLenths[x][y] >= q and gradsLenths[x][y] >= r:
+                suppressed[x][y] = 255
+            else:
+                suppressed[x][y] = 0
 
     return suppressed
+def checkThreshAndEdge(img,filteredImg,gradientsLength,boundPath1=10,boundPath2 = 25):
+    maxGradient = np.max(gradientsLength)
+    lower_bound = maxGradient / boundPath1
+    upper_bound = maxGradient / boundPath2
+    img_border_filter = np.zeros(img.shape)
 
-preprocessImage("test4.jpeg")
+    for i in range(0,img.shape[0]):
+        for j in range(0,img.shape[1]):
+            gradient = gradientsLength[i][j]
+            # является лок максимумом
+            if (filteredImg[i][j] == 255):
+                if (gradient >= lower_bound and gradient <= upper_bound):
+                    print(1)
+                    flag = False
+                    # проверим соседние пиксели текусщего пикселя
+                    for k in range(-1, 2):
+                        for l in range(-1, 2):
+                            if (flag):
+                                break
+                            if (filteredImg[i + k][j + l] == 255 and filteredImg[i + k][j + l] >= lower_bound):
+                                flag = True
+                                break
+                    if (flag):
+                        filteredImg[i][j] = 255
+                elif (gradient > upper_bound):
+                    img_border_filter[i][j] = 255
+    return img_border_filter
+
+preprocessImage("test2.jpg")
