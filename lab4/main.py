@@ -9,29 +9,31 @@ def preprocessImage(path,kernelSize = 5,sigmaX=10,sigmaY=10,sizeX=640,sizeY=640)
     img = cv2.imread(path)
     img = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
     img = cv2.resize(img,(sizeX,sizeY))
-    print(img)
+    #print(img)
     cv2.imshow("GrayScale image",img)
 
     imgGaussian = cv2.GaussianBlur(img,(kernelSize,kernelSize),sigmaX=sigmaX,sigmaY=sigmaY)
-    print(imgGaussian)
-    # cv2.imshow("Gaussian image",imgGaussian)
+    #print(imgGaussian)
+    cv2.imshow("Gaussian image",imgGaussian)
+
+    grads = calcGradients(imgGaussian)
+    #print(grads)
+    lengths = caclGradLengths(imgGaussian,grads)
+    print('Матрица длин')
+    print(lengths)
+    print('Матрица углов')
+    corners = calcCorners(imgGaussian,grads)
+    print(corners)
+
+    suppressed_img = supressNotMax(lengths, corners)
+    # Вывод изображений на экран
+    cv2.imshow('Suppressed Image', suppressed_img)
     #
-    # grads = calcGradients(imgGaussian)
-    # print(grads)
-    # lengths = caclGradLengths(imgGaussian,grads)
-    # print(lengths)
-    # corners = calcCorners(imgGaussian,grads)
-    # print(corners)
-    #
-    # suppressed_img = supressNotMax(lengths, corners)
-    # # Вывод изображений на экран
-    # cv2.imshow('Suppressed Image', suppressed_img)
-    #
-    # edgeImg = checkThreshAndEdge(imgGaussian,suppressed_img,lengths,10)
-    # cv2.imshow('Edge Image', edgeImg)
-    # print(edgeImg)
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows()
+    edgeImg = checkThreshAndEdge(imgGaussian,suppressed_img,lengths,10)
+    cv2.imshow('Edge Image', edgeImg)
+    print(edgeImg)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
 
 def calcGradients(img):
 
@@ -118,7 +120,7 @@ def supressNotMax(gradsLenths,corners):
                 q = gradsLenths[x+1][y+1]
                 r = gradsLenths[x-1][y-1]
 
-            if gradsLenths[x][y] >= q and gradsLenths[x][y] >= r:
+            if gradsLenths[x][y] > q and gradsLenths[x][y] > r:
                 suppressed[x][y] = 255
             else:
                 suppressed[x][y] = 0
@@ -153,4 +155,4 @@ def checkThreshAndEdge(img,filteredImg,gradientsLength,boundPath1=10,boundPath2 
                     img_border_filter[i][j] = 255
     return img_border_filter
 
-preprocessImage("test2.jpg")
+preprocessImage("test4.jpeg")

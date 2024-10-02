@@ -26,7 +26,7 @@ class KanniAlg {
         println(corners)
 
         val suppressedImg = supressNotMax(lengths, corners)
-//        suppressedImg.output(writer,"src/main/resources/supressedImg.jpg")
+
 
         val edgeImg = checkThreshAndEdge(blurredImage, suppressedImg, lengths, 10)
         edgeImg?.output(writer, "src/main/resources/edgeImg.jpg")
