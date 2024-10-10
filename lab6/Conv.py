@@ -51,4 +51,17 @@ def trainConv(epochs,batch_size,fileName):
 #trainConv(19,32,'mlp19_32_Conv')
 
 #0,98 418
-trainConv(19,16,'mlp19_16_Conv')
+#trainConv(19,16,'mlp19_16_Conv')
+
+model = keras.Sequential()
+model.add(keras.layers.Conv2D(32, kernel_size=(3, 3), activation='relu', input_shape=(28, 28, 1)))
+model.add(keras.layers.MaxPooling2D(pool_size=(2, 2)))
+model.add(keras.layers.Flatten())
+model.add(keras.layers.Dense(128, activation='relu'))
+model.add(keras.layers.Dropout(0.5))
+model.add(keras.layers.Dense(10, activation='softmax'))
+model.load_weights('mlp19_32_Conv.weights.h5')
+model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+
+test_loss, test_accuracy = model.evaluate(xTest, yTest)
+print(f'Test loss: {test_loss}, Test accuracy: {test_accuracy}')

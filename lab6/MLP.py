@@ -57,3 +57,17 @@ def trainMlp(epochs,batch_size,fileName):
 
 #На 20 эпохах точность 0,979 точность,время обучения 160s
 #trainMlp(20,16,'mlp16')
+
+
+model = keras.Sequential()
+model.add(keras.Input(shape=(784,)))
+model.add(keras.layers.Dense(256, activation='relu'))
+model.add(keras.layers.Dropout(0.2))
+model.add(keras.layers.Dense(256, activation='relu'))
+model.add(keras.layers.Dropout(0.2))
+model.add(keras.layers.Dense(10, activation='softmax'))
+model.load_weights('mlp16.weights.h5')
+model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+
+test_loss, test_accuracy = model.evaluate(xTest, yTest)
+print(f'Test loss: {test_loss}, Test accuracy: {test_accuracy}')
