@@ -5,7 +5,7 @@ import numpy
 import numpy as np
 import math
 
-def processVideo(path,deltaThresh=60,countourArea=20,kernelSize = 11,sigmaX=70,sigmaY=70):
+def processVideo(path,pathOutput,deltaThresh=60,countourArea=1000,kernelSize = 11,sigmaX=70,sigmaY=70):
     cap = cv2.VideoCapture(path)
     ret, frame = cap.read()
     if ret:
@@ -16,7 +16,8 @@ def processVideo(path,deltaThresh=60,countourArea=20,kernelSize = 11,sigmaX=70,s
         fourcc = cv2.VideoWriter_fourcc(*'mp4v')
         w = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
         h = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-        videoWriter = cv2.VideoWriter("output.mp4", fourcc, 144,(w,h))
+        videoWriter = cv2.VideoWriter(pathOutput, fourcc, 144,(w,h))
+        print(videoWriter)
         while True:
             oldFrame = img.copy()
             ret, frame = cap.read()
@@ -41,7 +42,7 @@ def processVideo(path,deltaThresh=60,countourArea=20,kernelSize = 11,sigmaX=70,s
                 if area < countourArea:
                     continue
                 videoWriter.write(frame)
-            cv2.imshow('frame', threshFrame)
+                cv2.imshow('frame', threshFrame)
             if cv2.waitKey(1) & 0xFF == 27:
                 break
         cap.release()
@@ -50,4 +51,7 @@ def processVideo(path,deltaThresh=60,countourArea=20,kernelSize = 11,sigmaX=70,s
 
 
 
-processVideo('ЛР4_main_video.mov')
+#processVideo('ЛР4_main_video.mov')
+processVideo('ЛР4_motions.mov','output.mp4')
+processVideo('ЛР4_motions.mov','output1.mp4',kernelSize=3,sigmaX=50,sigmaY=50,deltaThresh=60)
+processVideo('ЛР4_motions.mov','output2.mp4',kernelSize=5,sigmaX=50,sigmaY=50,deltaThresh=20)
