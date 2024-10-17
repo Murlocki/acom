@@ -82,10 +82,12 @@ class AugmentationDataset:
                     boxElems = box.split(' ')
                     outputBox +=boxElems[0]
                     boxCoords = boxElems[1:]
-                    for i in range(0,len(boxCoords)-1,2):
-                        point = np.array([[int(boxCoords[i])] ,[int(boxCoords[i+1])],[1]])
-                        newPoint = rotationMat @ point
-                        outputBox +=f' {math.ceil(newPoint[0])} {math.ceil(newPoint[1])}'
+                    point = np.array([[int(boxCoords[0])] ,[int(boxCoords[1])],[1]])
+                    newPoint = rotationMat @ point
+                    outputBox +=f' {math.floor(newPoint[0])} {math.floor(newPoint[1])}'
+                    point = np.array([[int(boxCoords[2])], [int(boxCoords[3])], [1]])
+                    newPoint = rotationMat @ point
+                    outputBox += f' {math.ceil(newPoint[0])} {math.ceil(newPoint[1])}'
                     outputBox+=' 0\n'
                 # Записываем новое изображение
                 new_file_name = (boxFiles[index].name[0: len(boxFiles[index].name) - 4] + "_" + str(angle) + ".box")
