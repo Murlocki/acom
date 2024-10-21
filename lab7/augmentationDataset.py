@@ -3,6 +3,7 @@ import math
 import pathlib
 import cv2
 import numpy as np
+from PIL import Image
 
 
 def relativaPath(relativePath):
@@ -48,6 +49,28 @@ class AugmentationDataset:
 
         with open(newDatasetName + "\labels.csv", "w") as text_file:
             text_file.write(csv_str)
+    def createAugmentationText(self,datasetName,newDatasetName):
+        imgFiles = list(pathlib.Path(str(relativaPath(datasetName))).glob("*.jpg"))
+        labels = {}
+        csv_str = ""
+        with open(str(relativaPath(datasetName + "/labels.csv"))) as csvfile:
+            reader = csv.reader(csvfile, delimiter=",", quotechar="'")
+            for row in reader:
+                labels[row[0]] = row[1]
+
+        for imgFile in imgFiles:
+            for angle in range(-20, 21, 1):
+                new_file_name = (imgFile.name[0: len(imgFile.name) - 4] + "_" + str(angle) + ".gt.txt")
+                csv_str += new_file_name + "," + labels[imgFile.name] + "\n"
+                with open(newDatasetName + f"/{new_file_name}", "w") as text_file:
+                    text_file.write(labels[imgFile.name])
+    def createAugmentationConvert(self,datasetName,newDatasetName):
+        imgFiles = list(pathlib.Path(str(relativaPath(datasetName))).glob("*.jpg"))
+        for imgFile in imgFiles:
+            for angle in range(-20, 21, 1):
+                new_file_name = (imgFile.name[0: len(imgFile.name) - 4] + "_" + str(angle) + ".png")
+                im = Image.open(imgFile)
+                im.save(newDatasetName + "/"+new_file_name)
     def createAugmentationBox(self,datasetName,newDatasetName):
         imgFiles = list(pathlib.Path(str(relativaPath(datasetName))).glob("*.jpg"))
         boxFiles = list(pathlib.Path(str(relativaPath(datasetName))).glob("*.box"))
@@ -100,3 +123,5 @@ class AugmentationDataset:
 
 AugmentationDataset().createAugmentation("dataset","dataset2")
 AugmentationDataset().createAugmentationBox("dataset","dataset2")
+AugmentationDataset().createAugmentationText("dataset","dataset2")
+AugmentationDataset().createAugmentationConvert("dataset","dataset2")

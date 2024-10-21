@@ -9,7 +9,7 @@ class Checker(ABC):
     def checkOne(self,result,truth):
         pass
     @staticmethod
-    def setValueDefault():
+    def setDefault():
         FullCorrect.value = 0
 
     @abstractmethod
@@ -21,14 +21,13 @@ class Checker(ABC):
         return ""
 class FullCorrect(Checker):
     value = 0
-
+    @staticmethod
+    def setDefault():
+        FullCorrect.value = 0
     def checkOne(self, result, truth):
         if (result.lower() == truth.lower()):
             FullCorrect.value += 1
         return FullCorrect.value
-
-
-
     def checkList(self,results,truth):
         for result in results:
             if (result.lower() == truth.lower()):
@@ -44,7 +43,7 @@ class Similarity(Checker):
     value = []
 
     @staticmethod
-    def setValueDefault():
+    def setDefault():
         Similarity.value = []
 
     def checkList(self,results,truth):

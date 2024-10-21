@@ -1,15 +1,12 @@
 import csv
 import pathlib
-import re
-import statistics
-from difflib import SequenceMatcher
 
 import cv2
+import torch
 from pytesseract import pytesseract
 
 from lab7.Checkers import FullCorrect, Similarity
-from lab7.Finders import Straight, AverageOfAug, Boxes, Filtered
-from lab7.augmentationDataset import AugmentationDataset
+from lab7.Finders import Straight, AverageOfAug, Boxes, Filtered, EasyOcr
 
 
 def relativePath(relPath):
@@ -17,7 +14,7 @@ def relativePath(relPath):
     return path
 
 
-
+pytesseract.tesseract_cmd = r"C:\Users\kiril\Desktop\acom\lab7\tesseract\tesseract.exe"
 class Tesseract:
     def __init__(self, recType, valType):
         self.valType = valType
@@ -35,12 +32,16 @@ class Tesseract:
             self.finder = AverageOfAug()
         elif recType == "filtered_recognition":
             self.finder = Filtered()
+        elif recType == "easy_ocr":
+            self.finder = EasyOcr()
     def testRecognition(self, datasetName, showImg=False):
         outputStr = ""
         labels = {}
         imagesCount = 0
+        self.finder.setDefault()
+        self.check.setDefault()
 
-        with open(str(relativePath(datasetName + "/labels.csv")), newline="", encoding="utf-8") as csvfile:
+        with open(str(relativePath(datasetName + r"/labels.csv")), newline="", encoding="utf-8") as csvfile:
             reader = csv.reader(csvfile, delimiter=",", quotechar="'")
             for row in reader:
                 labels[row[0]] = row[1]
@@ -73,7 +74,6 @@ class Tesseract:
 
         if self.recType == "avg_of_aug":
             imagesCount = 0
-            self.check.setValueDefault()
             for key in self.finder.value.keys():
                 results = self.finder.value[key]
                 groud_truth = self.finder.truths[key]
@@ -86,15 +86,27 @@ class Tesseract:
                   encoding="utf-8", ) as f:
             f.write(outputStr)
 
+#Tesseract("avg_of_aug", "full_correct").testRecognition("dataset", showImg=False)
+#Tesseract("avg_of_aug", "similarity").testRecognition("dataset", showImg=False)
+#Tesseract("avg_of_aug", "full_correct").testRecognition("dataset2", showImg=False)
+#Tesseract("avg_of_aug", "similarity").testRecognition("dataset2", showImg=False)
 
-#Tesseract("avg_of_aug", "full_correct").testRecognition("dataset3", showImg=False)
-#Tesseract("avg_of_aug", "similarity").testRecognition("dataset3", showImg=False)
 #Tesseract("straight_recognition", "full_correct").testRecognition("dataset", showImg=False)
 #Tesseract("straight_recognition", "similarity").testRecognition( "dataset", showImg=False)
-#Tesseract("boxes_recognition", "full_correct").testRecognition("dataset", showImg=False)
-#Tesseract("boxes_recognition", "similarity").testRecognition("dataset", showImg=False)
+#Tesseract("straight_recognition", "full_correct").testRecognition("dataset2", showImg=False)
+#Tesseract("straight_recognition", "similarity").testRecognition( "dataset2", showImg=False)
 
-# Tesseract("filtered_recognition", "full_correct").testRecognition("dataset2", showImg=False)
-# Tesseract("filtered_recognition", "similarity").testRecognition("dataset", showImg=False)
-# Tesseract("filtered_recognition", "similarity").testRecognition("dataset2", showImg=False)
-# Tesseract("filtered_recognition", "full_correct").testRecognition("dataset", showImg=False)
+Tesseract("boxes_recognition", "full_correct").testRecognition("dataset", showImg=False)
+Tesseract("boxes_recognition", "similarity").testRecognition("dataset", showImg=False)
+Tesseract("boxes_recognition", "full_correct").testRecognition("dataset2", showImg=False)
+Tesseract("boxes_recognition", "similarity").testRecognition("dataset2", showImg=False)
+
+#Tesseract("filtered_recognition", "full_correct").testRecognition("dataset", showImg=False)
+#Tesseract("filtered_recognition", "similarity").testRecognition("dataset", showImg=False)
+#Tesseract("filtered_recognition", "full_correct").testRecognition("dataset2", showImg=False)
+#Tesseract("filtered_recognition", "similarity").testRecognition("dataset2", showImg=False)
+
+#Tesseract("easy_ocr", "full_correct").testRecognition("dataset", showImg=False)
+#Tesseract("easy_ocr", "similarity").testRecognition("dataset", showImg=False)
+#Tesseract("easy_ocr", "full_correct").testRecognition("dataset2", showImg=False)
+#Tesseract("easy_ocr", "similarity").testRecognition("dataset2", showImg=False)
