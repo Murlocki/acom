@@ -3,6 +3,10 @@ from cv2 import VideoCapture
 
 
 class KCFTracker:
+    def __init__(self):
+        self.writer = None
+    def setUpWriter(self,fourcc,fps,framesize):
+        self.writer = cv2.VideoWriter("result.mp4",fourcc,fps,framesize)
     def process(self,videoCap:VideoCapture,**kwargs):
         # Чтение первого кадра
         ret, frame = videoCap.read()
@@ -28,8 +32,9 @@ class KCFTracker:
                 cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
 
             cv2.imshow("Tracking", frame)
+            self.writer.write(frame)
             if cv2.waitKey(30) & 0xFF == ord('q'):
                 break
-
+        self.writer.release()
         videoCap.release()
         cv2.destroyAllWindows()
