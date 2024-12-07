@@ -26,9 +26,11 @@ def kirsch_operator(image):
 
 
 # Загрузка изображения и преобразование в оттенки серого
-image = cv2.imread('testImage3.jpg')
+image = cv2.imread('testImage5.jpg')
+minValue = 150
+
 gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-gray_image = cv2.GaussianBlur(gray_image, (5, 5), 0)
+gray_image = cv2.GaussianBlur(gray_image, (5, 5), sigmaX=12, sigmaY=12)
 # Применение алгоритма Кирша
 edges_kirsch = kirsch_operator(gray_image)
 
@@ -36,7 +38,7 @@ edges_kirsch = kirsch_operator(gray_image)
 edges_kirsch = cv2.normalize(edges_kirsch, None, alpha=0, beta=255,
                              norm_type=cv2.NORM_MINMAX)
 edges_kirsch = np.uint8(edges_kirsch)
-
+_, edges_kirsch = cv2.threshold(edges_kirsch,minValue,255,cv2.THRESH_BINARY)
 # Отображение результатов
 cv2.imshow('Original Image', image)
 cv2.imshow('Edges using Kirsch Operator', edges_kirsch)

@@ -184,6 +184,6 @@ class CanniAlg:
                         img_border_filter[i][j] = 255
         return img_border_filter
 
-#CanniAlg(SobelOperator()).preprocessImage("test4.jpeg")
-#CanniAlg(PriutOperator()).preprocessImage("test4.jpeg")
-CanniAlg(SobelOperator()).preprocessImage("testImage3.jpg",kernelSize=5,sigmaX=12,sigmaY=12,lowerBound=80,upperBound=110)
+#CanniAlg(SharOperator()).preprocessImage("testImage5.jpg",kernelSize=5,sigmaX=12,sigmaY=12,lowerBound=650,upperBound=800)
+#CanniAlg(PriutOperator()).preprocessImage("testImage5.jpg",kernelSize=5,sigmaX=10,sigmaY=10,lowerBound=60,upperBound=90)
+#CanniAlg(SobelOperator()).preprocessImage("testImage5.jpg",kernelSize=5,sigmaX=10,sigmaY=10,lowerBound=170,upperBound=210)
